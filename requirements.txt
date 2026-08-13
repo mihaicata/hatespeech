@@ -1,0 +1,6 @@
+flask
+torch
+transformers
+langdetect
+emoji
+numpy

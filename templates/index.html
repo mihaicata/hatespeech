@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hate Speech Detector</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #2a2e37;
+    --text: #e8eaed;
+    --muted: #9aa1ac;
+    --accent: #6ea8fe;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f5f6f8;
+      --panel: #ffffff;
+      --border: #e1e4e9;
+      --text: #16181d;
+      --muted: #666d78;
+      --accent: #2f6fed;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 640px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  h1 {
+    font-size: 1.4rem;
+    margin: 0 0 4px;
+  }
+  p.sub {
+    color: var(--muted);
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    resize: vertical;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  textarea:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+  }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .lang-badge {
+    font-size: 0.8rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 10px;
+  }
+  .examples {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .examples button {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    font-weight: 400;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+  .result {
+    margin-top: 28px;
+    display: none;
+  }
+  .result.visible { display: block; }
+  .meter-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .meter {
+    height: 12px;
+    border-radius: 999px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .meter-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #34c759, #ffd60a, #ff453a);
+    transition: width 0.4s ease;
+  }
+  .confidence {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+  .verdict {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .meta {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .error {
+    margin-top: 16px;
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    display: none;
+  }
+  .error.visible { display: block; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Hate Speech Detector</h1>
+    <p class="sub">English &amp; German comments · emoji-aware · vector-based scoring</p>
+
+    <textarea id="text" placeholder="Type or paste a comment... (English or German, emoji welcome 🙂)"></textarea>
+
+    <div class="examples">
+      <button type="button" data-text="You are all disgusting subhuman garbage and should disappear. 🤬">EN hateful</button>
+      <button type="button" data-text="Ich finde dein Video wirklich klasse, weiter so! 😄">DE friendly</button>
+      <button type="button" data-text="Verpiss dich, du widerliches Stück Dreck. 🤮">DE hateful</button>
+      <button type="button" data-text="Thanks for sharing this, really helpful post 🙌">EN friendly</button>
+    </div>
+
+    <div class="row">
+      <button id="analyze">Analyze</button>
+      <span id="langBadge" class="lang-badge" style="display:none;"></span>
+    </div>
+
+    <div class="error" id="error"></div>
+
+    <div class="result" id="result">
+      <div class="meter-label">
+        <span>Hate speech confidence</span>
+        <span id="confidenceLabel">0%</span>
+      </div>
+      <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+      <div class="verdict" id="verdict"></div>
+      <div class="meta">
+        <span id="langMeta"></span>
+        <span id="vectorMeta"></span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const textEl = document.getElementById('text');
+  const analyzeBtn = document.getElementById('analyze');
+  const resultEl = document.getElementById('result');
+  const meterFill = document.getElementById('meterFill');
+  const confidenceLabel = document.getElementById('confidenceLabel');
+  const verdictEl = document.getElementById('verdict');
+  const langMeta = document.getElementById('langMeta');
+  const vectorMeta = document.getElementById('vectorMeta');
+  const langBadge = document.getElementById('langBadge');
+  const errorEl = document.getElementById('error');
+
+  document.querySelectorAll('.examples button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      textEl.value = btn.dataset.text;
+      analyze();
+    });
+  });
+
+  analyzeBtn.addEventListener('click', analyze);
+  textEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) analyze();
+  });
+
+  async function analyze() {
+    const text = textEl.value.trim();
+    errorEl.classList.remove('visible');
+    if (!text) return;
+
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = 'Analyzing…';
+
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Request failed');
+      }
+
+      renderResult(data);
+    } catch (err) {
+      errorEl.textContent = err.message;
+      errorEl.classList.add('visible');
+      resultEl.classList.remove('visible');
+    } finally {
+      analyzeBtn.disabled = false;
+      analyzeBtn.textContent = 'Analyze';
+    }
+  }
+
+  function renderResult(data) {
+    const pct = data.confidence;
+    meterFill.style.width = pct + '%';
+    confidenceLabel.textContent = pct + '%';
+
+    let verdict = 'Looks fine';
+    if (pct >= 75) verdict = 'Very likely hateful';
+    else if (pct >= 40) verdict = 'Possibly hateful — review';
+    verdictEl.textContent = verdict;
+
+    langMeta.textContent = 'language: ' + data.language.toUpperCase();
+    vectorMeta.textContent = 'embedding dim: ' + data.vector_dim;
+
+    langBadge.style.display = 'inline-block';
+    langBadge.textContent = data.language.toUpperCase();
+
+    resultEl.classList.add('visible');
+  }
+</script>
+</body>
+</html>
