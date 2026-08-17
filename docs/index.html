@@ -13,6 +13,8 @@
     --text: #e8eaed;
     --muted: #9aa1ac;
     --accent: #6ea8fe;
+    --row-hover: #1d2129;
+    --ensemble-bg: #1c2333;
   }
   @media (prefers-color-scheme: light) {
     :root {
@@ -22,6 +24,8 @@
       --text: #16181d;
       --muted: #666d78;
       --accent: #2f6fed;
+      --row-hover: #f7f8fa;
+      --ensemble-bg: #eaf0ff;
     }
   }
   * { box-sizing: border-box; }
@@ -32,30 +36,24 @@
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 24px;
   }
   .card {
     width: 100%;
-    max-width: 640px;
+    max-width: 780px;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 32px;
+    margin-top: 24px;
   }
-  h1 {
-    font-size: 1.4rem;
-    margin: 0 0 4px;
-  }
-  p.sub {
-    color: var(--muted);
-    margin: 0 0 24px;
-    font-size: 0.9rem;
-  }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 24px; font-size: 0.9rem; }
   textarea {
     width: 100%;
-    min-height: 110px;
+    min-height: 100px;
     resize: vertical;
     background: transparent;
     color: var(--text);
@@ -65,18 +63,35 @@
     font-size: 1rem;
     font-family: inherit;
   }
-  textarea:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: -1px;
+  textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .examples { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .examples button {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    font-weight: 400;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
   }
-  .row {
+  .methods-picker { margin-top: 18px; }
+  .methods-picker legend { font-size: 0.8rem; color: var(--muted); padding: 0; margin-bottom: 8px; }
+  .methods-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .method-toggle {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-top: 14px;
-    flex-wrap: wrap;
+    gap: 6px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 12px 6px 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    user-select: none;
   }
-  button {
+  .method-toggle input { accent-color: var(--accent); }
+  .row { display: flex; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+  button#analyze {
     background: var(--accent);
     color: #fff;
     border: none;
@@ -86,10 +101,7 @@
     font-weight: 600;
     cursor: pointer;
   }
-  button:disabled {
-    opacity: 0.6;
-    cursor: default;
-  }
+  button#analyze:disabled { opacity: 0.6; cursor: default; }
   .lang-badge {
     font-size: 0.8rem;
     color: var(--muted);
@@ -97,102 +109,36 @@
     border-radius: 999px;
     padding: 4px 10px;
   }
-  .examples {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .examples button {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    font-weight: 400;
-    font-size: 0.8rem;
-    padding: 6px 12px;
-  }
-  .status {
-    margin-top: 16px;
-    font-size: 0.82rem;
-    color: var(--muted);
-    display: none;
-  }
+  .status { margin-top: 14px; font-size: 0.82rem; color: var(--muted); display: none; }
   .status.visible { display: block; }
-  .progress {
-    height: 6px;
-    border-radius: 999px;
-    background: var(--border);
-    overflow: hidden;
-    margin-top: 6px;
-  }
-  .progress-fill {
-    height: 100%;
-    width: 0%;
-    background: var(--accent);
-    transition: width 0.2s ease;
-  }
-  .result {
-    margin-top: 28px;
-    display: none;
-  }
-  .result.visible { display: block; }
-  .meter-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .meter {
-    height: 12px;
-    border-radius: 999px;
-    background: var(--border);
-    overflow: hidden;
-  }
-  .meter-fill {
-    height: 100%;
-    width: 0%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #34c759, #ffd60a, #ff453a);
-    transition: width 0.4s ease;
-  }
-  .confidence {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-top: 10px;
-  }
-  .verdict {
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-  .meta {
-    margin-top: 16px;
-    font-size: 0.8rem;
-    color: var(--muted);
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .error {
-    margin-top: 16px;
-    color: #ff6b6b;
-    font-size: 0.85rem;
-    display: none;
-  }
+  .progress { height: 6px; border-radius: 999px; background: var(--border); overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.2s ease; }
+  .error { margin-top: 16px; color: #ff6b6b; font-size: 0.85rem; display: none; }
   .error.visible { display: block; }
-  footer {
-    margin-top: 24px;
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
+  .result { margin-top: 26px; display: none; }
+  .result.visible { display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.02em; }
+  tbody tr:hover { background: var(--row-hover); }
+  .conf-cell { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .conf-bar { width: 70px; height: 6px; border-radius: 999px; background: var(--border); overflow: hidden; flex-shrink: 0; }
+  .conf-bar-fill { height: 100%; background: linear-gradient(90deg, #34c759, #ffd60a, #ff453a); }
+  .vote-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+  .vote-pill.hateful { background: rgba(255, 69, 58, 0.15); color: #ff453a; }
+  .vote-pill.clean { background: rgba(52, 199, 89, 0.15); color: #34c759; }
+  .detail-cell { color: var(--muted); font-size: 0.78rem; max-width: 260px; }
+  tr.ensemble-row { background: var(--ensemble-bg); font-weight: 600; }
+  tr.ensemble-row td { border-bottom: none; }
+  .footnote { margin-top: 12px; font-size: 0.78rem; color: var(--muted); }
+  footer { margin-top: 24px; font-size: 0.75rem; color: var(--muted); }
   footer a { color: var(--accent); }
 </style>
 </head>
 <body>
   <div class="card">
     <h1>Hate Speech Detector</h1>
-    <p class="sub">English &amp; German comments · emoji-aware · runs entirely in your browser</p>
+    <p class="sub">English &amp; German · emoji-aware · 5 independent methods, running entirely in your browser</p>
 
     <textarea id="text" placeholder="Type or paste a comment... (English or German, emoji welcome 🙂)"></textarea>
 
@@ -203,58 +149,316 @@
       <button type="button" data-text="Thanks for sharing this, really helpful post 🙌">EN friendly</button>
     </div>
 
+    <fieldset class="methods-picker" style="border:none; padding:0;">
+      <legend>Methods to run</legend>
+      <div class="methods-grid" id="methodsGrid"></div>
+    </fieldset>
+
     <div class="row">
       <button id="analyze">Analyze</button>
       <span id="langBadge" class="lang-badge" style="display:none;"></span>
     </div>
 
     <div class="status" id="status">
-      <span id="statusText">Loading model…</span>
+      <span id="statusText">Loading…</span>
       <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
     </div>
-
     <div class="error" id="error"></div>
 
     <div class="result" id="result">
-      <div class="meter-label">
-        <span>Hate speech confidence</span>
-        <span id="confidenceLabel">0%</span>
-      </div>
-      <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
-      <div class="verdict" id="verdict"></div>
-      <div class="meta">
-        <span id="langMeta"></span>
-        <span id="modelMeta">model: xlm-roberta-base-offensive-comment-classifier (int8)</span>
-      </div>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Confidence</th><th>Vote</th><th>Detail</th></tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+      <p class="footnote">Ensemble = share of selected methods that individually voted "hateful" (confidence ≥ 50%), each method weighted equally.</p>
     </div>
 
     <footer>
       Runs 100% client-side via <a href="https://github.com/huggingface/transformers.js" target="_blank" rel="noopener">transformers.js</a>
-      and <a href="https://huggingface.co/Horbee/xlm-roberta-base-offensive-comment-classifier" target="_blank" rel="noopener">Horbee/xlm-roberta-base-offensive-comment-classifier</a>.
-      First run downloads the quantized model (~280MB) once; the browser caches it after that.
+      + hand-ported scikit-learn/gensim models. Models are downloaded once per method and cached by the browser.
     </footer>
   </div>
 
 <script type="module">
   import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.5";
-
-  // Skip local model-file lookup, always fetch from the HF Hub CDN.
   env.allowLocalModels = false;
 
-  const MODEL_ID = "Horbee/xlm-roberta-base-offensive-comment-classifier";
+  // ---------------------------------------------------------------------
+  // shared: emoji handling + language detection (display only)
+  // ---------------------------------------------------------------------
+  const EMOJI_WORDS = {
+    "🤬": "furious swearing", "😡": "angry", "🤮": "disgusted vomiting",
+    "🤢": "disgusted", "💩": "crap", "🖕": "middle finger", "👿": "evil",
+    "😈": "devilish", "☠️": "death threat", "🔪": "knife violence",
+    "🔫": "gun violence", "🤡": "clown mockery", "🙄": "eye roll",
+    "😤": "furious huff", "💀": "dead", "🐷": "pig insult", "🐖": "pig insult",
+    "😄": "happy", "😊": "friendly", "🙂": "friendly", "❤️": "love",
+    "👍": "approve", "🙌": "celebrate", "😍": "love", "🥰": "affection",
+    "🎉": "celebrate", "😂": "laughing", "🤣": "laughing", "😢": "sad",
+    "😭": "crying",
+  };
+  const EMOJI_RE = /\p{Extended_Pictographic}/gu;
+  function demojize(text) {
+    return text.replace(EMOJI_RE, (m) => ` ${EMOJI_WORDS[m] || "emoji"} `);
+  }
 
+  const DE_HINTS = /[äöüß]|\b(der|die|das|und|ist|nicht|ich|du|ein|eine|für|mit|auf|dich|dein|schön|wirklich)\b/i;
+  const EN_HINTS = /\b(the|is|and|you|are|this|that|for|really|great|thanks|hate)\b/i;
+  function detectLanguage(text) {
+    const de = (text.match(DE_HINTS) || []).length;
+    const en = (text.match(EN_HINTS) || []).length;
+    return de > en ? "de" : "en";
+  }
+
+  function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+  function round2(x) { return Math.round(x * 10000) / 100; }
+
+  // ---------------------------------------------------------------------
+  // Method 1: keyword matching
+  // ---------------------------------------------------------------------
+  const KEYWORDS = ["abschaum", "arschloch", "asshole", "bastard", "beat you up", "bekloppt", "bitch", "blöd", "brainless", "bring dich um", "bullshit", "burn in hell", "clown", "disgusting", "dreck", "du sollst sterben", "dumb", "dumm", "filth", "fotze", "freak", "fuck", "fucking", "garbage", "geh sterben", "hope you die", "hunt you down", "hurensohn", "hässlich", "idiot", "kill you", "kys", "loser", "missgeburt", "moron", "pathetic", "piss off", "retard", "scheisse", "scheiße", "schlampe", "screw you", "scum", "shit", "should die", "spast", "stupid", "subhuman", "trash", "trottel", "ugly", "untermensch", "vermin", "verpiss dich", "verrecken", "vollidiot", "wertlos", "wichser", "widerlich", "worthless", "you deserve to die"];
+  const LEET_MAP = { "4": "a", "0": "o", "1": "i", "3": "e", "5": "s", "7": "t", "@": "a", "$": "s", "+": "t" };
+
+  function normalizeForKeywords(text) {
+    let t = demojize(text).toLowerCase().replace(/[40135@$+]/g, (c) => LEET_MAP[c] || c);
+    t = t.replace(/[^a-zäöüß\s]/g, " ");
+    t = t.replace(/(.)\1{2,}/g, "$1$1");
+    return t.replace(/\s+/g, " ").trim();
+  }
+
+  async function keywordMethod(text) {
+    const normalized = normalizeForKeywords(text);
+    const matched = KEYWORDS.filter((kw) => normalized.includes(kw));
+    const confidence = round2(1 - Math.exp(-0.9 * matched.length));
+    return { confidence, vote: confidence >= 50, detail: matched.length ? matched.join(", ") : "no keyword matches" };
+  }
+
+  // ---------------------------------------------------------------------
+  // Method 2: TF-IDF (char n-grams) + Logistic Regression
+  // ---------------------------------------------------------------------
+  let tfidfModel = null;
+  async function loadTfidfModel(onProgress) {
+    if (tfidfModel) return tfidfModel;
+    onProgress?.("Downloading TF-IDF weights…");
+    const [vocabRaw, weightsBuf] = await Promise.all([
+      fetch("models/tfidf_vocab.json").then((r) => r.json()),
+      fetch("models/tfidf_weights.bin").then((r) => r.arrayBuffer()),
+    ]);
+    const vocabSize = Object.keys(vocabRaw.vocab).length;
+    const weights = new Float32Array(weightsBuf);
+    tfidfModel = {
+      ngramMin: vocabRaw.ngram_min,
+      ngramMax: vocabRaw.ngram_max,
+      intercept: vocabRaw.intercept,
+      vocab: vocabRaw.vocab,
+      idf: weights.subarray(0, vocabSize),
+      coef: weights.subarray(vocabSize, vocabSize * 2),
+    };
+    return tfidfModel;
+  }
+
+  function charWbNgrams(text, minN, maxN) {
+    const ngrams = [];
+    for (const word of text.split(/\s+/).filter(Boolean)) {
+      const w = " " + word + " ";
+      const wLen = w.length;
+      for (let n = minN; n <= maxN; n++) {
+        let offset = 0;
+        ngrams.push(w.slice(offset, offset + n));
+        while (offset + n < wLen) {
+          offset += 1;
+          ngrams.push(w.slice(offset, offset + n));
+        }
+        if (offset === 0) break;
+      }
+    }
+    return ngrams;
+  }
+
+  async function tfidfMethod(text, onProgress) {
+    const model = await loadTfidfModel(onProgress);
+    const normalized = demojize(text).toLowerCase();
+    const ngrams = charWbNgrams(normalized, model.ngramMin, model.ngramMax);
+    const counts = new Map();
+    for (const g of ngrams) {
+      const idx = model.vocab[g];
+      if (idx === undefined) continue;
+      counts.set(idx, (counts.get(idx) || 0) + 1);
+    }
+    let sumSquares = 0;
+    const entries = [];
+    for (const [idx, tf] of counts) {
+      const val = tf * model.idf[idx];
+      entries.push([idx, val]);
+      sumSquares += val * val;
+    }
+    const norm = Math.sqrt(sumSquares) || 1;
+    let z = model.intercept;
+    for (const [idx, val] of entries) z += (val / norm) * model.coef[idx];
+    const confidence = round2(sigmoid(z));
+    return { confidence, vote: confidence >= 50, detail: "char n-grams, trained on EN+DE tweets" };
+  }
+
+  // ---------------------------------------------------------------------
+  // Method 3: Word2Vec + Logistic Regression
+  // ---------------------------------------------------------------------
+  let word2vecModel = null;
+  async function loadWord2vecModel(onProgress) {
+    if (word2vecModel) return word2vecModel;
+    onProgress?.("Downloading Word2Vec weights…");
+    const [vocabRaw, vecBuf] = await Promise.all([
+      fetch("models/word2vec_vocab.json").then((r) => r.json()),
+      fetch("models/word2vec_vectors.bin").then((r) => r.arrayBuffer()),
+    ]);
+    word2vecModel = {
+      dim: vocabRaw.dim,
+      intercept: vocabRaw.intercept,
+      coef: vocabRaw.coef,
+      vocab: vocabRaw.vocab,
+      vectors: new Float32Array(vecBuf),
+    };
+    return word2vecModel;
+  }
+
+  function tokenizeWords(text) {
+    const matches = text.match(/[a-zA-ZäöüßÄÖÜ]+/g) || [];
+    return matches.map((w) => w.toLowerCase());
+  }
+
+  async function word2vecMethod(text, onProgress) {
+    const model = await loadWord2vecModel(onProgress);
+    const tokens = tokenizeWords(demojize(text));
+    const dim = model.dim;
+    const acc = new Float64Array(dim);
+    let count = 0;
+    for (const t of tokens) {
+      const idx = model.vocab[t];
+      if (idx === undefined) continue;
+      const base = idx * dim;
+      for (let d = 0; d < dim; d++) acc[d] += model.vectors[base + d];
+      count++;
+    }
+    if (count > 0) for (let d = 0; d < dim; d++) acc[d] /= count;
+    let z = model.intercept;
+    for (let d = 0; d < dim; d++) z += acc[d] * model.coef[d];
+    const confidence = round2(sigmoid(z));
+    const coverage = tokens.length ? `${count}/${tokens.length} words recognized` : "no words";
+    return { confidence, vote: confidence >= 50, detail: coverage };
+  }
+
+  // ---------------------------------------------------------------------
+  // Method 4: sentence-embedding k-NN similarity vote
+  // ---------------------------------------------------------------------
+  const REFERENCE_EXAMPLES = [["You people are all disgusting and don't deserve to live here.", 1], ["Go back to where you came from, nobody wants you.", 1], ["You're such a worthless piece of trash, just disappear already.", 1], ["I hope something terrible happens to you and your whole family.", 1], ["Everyone like you is subhuman garbage that should be wiped out.", 1], ["Shut your ugly mouth before I shut it for you.", 1], ["You're too stupid to even exist, honestly pathetic.", 1], ["People from that country are all criminals and animals.", 1], ["Kill yourself, nobody would even notice.", 1], ["Women like you don't deserve respect, just shut up.", 1], ["I despise everything about your kind, you make me sick.", 1], ["You're a waste of oxygen and everyone agrees.", 1], ["Get lost, freak, no one wants you around here.", 1], ["Your entire religion is a disease that needs to be erased.", 1], ["You're an embarrassment to the human race.", 1], ["Thanks so much for helping me move this weekend!", 0], ["I really enjoyed the concert last night, great show.", 0], ["Could you send me the report before Friday, please?", 0], ["I disagree with your point, but I see where you're coming from.", 0], ["This restaurant has amazing food, you should try it.", 0], ["I'm a bit tired today, going to bed early.", 0], ["Congratulations on your new job, well deserved!", 0], ["The weather has been lovely this week.", 0], ["Let's grab coffee sometime and catch up.", 0], ["That movie was okay, not really my favorite genre.", 0], ["I'm frustrated with this bug but we'll figure it out.", 0], ["Happy birthday, hope you have a wonderful day!", 0], ["The traffic was terrible this morning, ugh.", 0], ["Great presentation today, really clear and well organized.", 0], ["I don't think that plan will work, let's reconsider it.", 0], ["Ihr seid alle widerlich und gehört nicht hierher.", 1], ["Geh zurück in dein Land, hier will dich niemand.", 1], ["Du bist so ein wertloses Stück Dreck, verschwinde einfach.", 1], ["Ich hoffe deiner ganzen Familie passiert etwas Schreckliches.", 1], ["Leute wie du sind Untermenschen und gehören ausgerottet.", 1], ["Halt deine hässliche Fresse, bevor ich sie dir stopfe.", 1], ["Du bist zu dumm um überhaupt zu existieren, echt erbärmlich.", 1], ["Alle aus diesem Land sind Verbrecher und Tiere.", 1], ["Bring dich um, es würde sowieso niemand merken.", 1], ["Frauen wie du verdienen keinen Respekt, halt einfach die Klappe.", 1], ["Ich verabscheue alles an deiner Sorte, ihr macht mich krank.", 1], ["Du bist eine Verschwendung von Sauerstoff.", 1], ["Verpiss dich, Freak, hier will dich keiner haben.", 1], ["Deine ganze Religion ist eine Krankheit, die ausgelöscht gehört.", 1], ["Du bist eine Schande für die Menschheit.", 1], ["Danke, dass du mir beim Umzug geholfen hast!", 0], ["Das Konzert gestern Abend war wirklich toll.", 0], ["Kannst du mir den Bericht bis Freitag schicken?", 0], ["Ich sehe das anders, verstehe aber deinen Punkt.", 0], ["Das Restaurant hat großartiges Essen, probier es mal.", 0], ["Ich bin heute etwas müde, gehe früh ins Bett.", 0], ["Herzlichen Glückwunsch zum neuen Job, gut verdient!", 0], ["Das Wetter war diese Woche wirklich schön.", 0], ["Lass uns mal wieder einen Kaffee trinken gehen.", 0], ["Der Film war ganz okay, nicht so mein Genre.", 0], ["Ich bin von dem Bug genervt, aber wir kriegen das hin.", 0], ["Alles Gute zum Geburtstag, ich wünsche dir einen schönen Tag!", 0], ["Der Verkehr heute Morgen war furchtbar.", 0], ["Tolle Präsentation heute, wirklich klar und gut strukturiert.", 0], ["Ich glaube der Plan funktioniert nicht, lass uns umdenken.", 0]];
+
+  let embedder = null;
+  let referenceEmbeddings = null;
+  async function getEmbedder(onProgress) {
+    if (embedder) return embedder;
+    embedder = await pipeline("feature-extraction", "Xenova/paraphrase-multilingual-MiniLM-L12-v2", {
+      dtype: "q8",
+      progress_callback: (p) => {
+        if (p.status === "progress" && p.total) {
+          onProgress?.(`Downloading ${p.file} — ${Math.round((p.loaded / p.total) * 100)}%`);
+        }
+      },
+    });
+    onProgress?.("Embedding reference examples…");
+    const refTexts = REFERENCE_EXAMPLES.map(([t]) => t);
+    const out = await embedder(refTexts, { pooling: "mean", normalize: true });
+    referenceEmbeddings = out.tolist();
+    return embedder;
+  }
+
+  function dot(a, b) {
+    let s = 0;
+    for (let i = 0; i < a.length; i++) s += a[i] * b[i];
+    return s;
+  }
+
+  async function embeddingKnnMethod(text, onProgress, k = 7) {
+    await getEmbedder(onProgress);
+    const out = await embedder(demojize(text), { pooling: "mean", normalize: true });
+    const query = out.tolist()[0];
+
+    const sims = referenceEmbeddings.map((v) => dot(v, query));
+    const idxSorted = sims.map((s, i) => [s, i]).sort((a, b) => b[0] - a[0]).slice(0, k);
+    const weights = idxSorted.map(([s]) => Math.max(s, 0));
+    const total = weights.reduce((a, b) => a + b, 0);
+    let confidence = 0;
+    if (total > 0) {
+      let weightedHate = 0;
+      idxSorted.forEach(([, i], j) => { weightedHate += weights[j] * REFERENCE_EXAMPLES[i][1]; });
+      confidence = round2(weightedHate / total);
+    }
+    const [topSim, topIdx] = idxSorted[0];
+    const nearest = REFERENCE_EXAMPLES[topIdx][0];
+    return {
+      confidence,
+      vote: confidence >= 50,
+      detail: `nearest match (${topSim.toFixed(2)} sim): "${nearest.slice(0, 50)}"`,
+    };
+  }
+
+  // ---------------------------------------------------------------------
+  // Method 5: fine-tuned transformer classifier
+  // ---------------------------------------------------------------------
+  let classifier = null;
+  async function getClassifier(onProgress) {
+    if (classifier) return classifier;
+    classifier = await pipeline("text-classification", "Horbee/xlm-roberta-base-offensive-comment-classifier", {
+      dtype: "q8",
+      progress_callback: (p) => {
+        if (p.status === "progress" && p.total) {
+          onProgress?.(`Downloading ${p.file} — ${Math.round((p.loaded / p.total) * 100)}%`);
+        }
+      },
+    });
+    return classifier;
+  }
+
+  async function transformerMethod(text, onProgress) {
+    const model = await getClassifier(onProgress);
+    const lang = detectLanguage(text);
+    const scores = await model(demojize(text), { top_k: null });
+    const offensive = scores.find((s) => s.label === "LABEL_1") || scores[0];
+    const confidence = round2(offensive.score);
+    return { confidence, vote: confidence >= 50, detail: `language: ${lang.toUpperCase()}` };
+  }
+
+  // ---------------------------------------------------------------------
+  // orchestrator
+  // ---------------------------------------------------------------------
+  const METHOD_REGISTRY = [
+    { id: "keyword", label: "Keyword Matching", run: keywordMethod },
+    { id: "tfidf", label: "TF-IDF + Logistic Regression", run: tfidfMethod },
+    { id: "word2vec", label: "Word2Vec + Logistic Regression", run: word2vecMethod },
+    { id: "embedding_knn", label: "Sentence Embedding k-NN", run: embeddingKnnMethod },
+    { id: "transformer", label: "Fine-tuned Transformer", run: transformerMethod },
+  ];
+
+  // ---------------------------------------------------------------------
+  // UI wiring
+  // ---------------------------------------------------------------------
   const textEl = document.getElementById('text');
   const analyzeBtn = document.getElementById('analyze');
   const resultEl = document.getElementById('result');
-  const meterFill = document.getElementById('meterFill');
-  const confidenceLabel = document.getElementById('confidenceLabel');
-  const verdictEl = document.getElementById('verdict');
-  const langMeta = document.getElementById('langMeta');
+  const resultBody = document.getElementById('resultBody');
   const langBadge = document.getElementById('langBadge');
   const errorEl = document.getElementById('error');
   const statusEl = document.getElementById('status');
   const statusText = document.getElementById('statusText');
   const progressFill = document.getElementById('progressFill');
+  const methodsGrid = document.getElementById('methodsGrid');
+
+  methodsGrid.innerHTML = METHOD_REGISTRY.map((m) => `
+    <label class="method-toggle">
+      <input type="checkbox" value="${m.id}" checked />
+      ${m.label}
+    </label>
+  `).join('');
 
   document.querySelectorAll('.examples button').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -268,86 +472,61 @@
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) analyze();
   });
 
-  // --- emoji handling -------------------------------------------------
-  // Fold common emoji into short descriptive words before scoring, so
-  // their sentiment isn't just dropped or left as opaque unicode. Any
-  // emoji not in the curated map still becomes a generic " emoji " token
-  // rather than being silently discarded.
-  const EMOJI_WORDS = {
-    "🤬": "furious swearing", "😡": "angry", "🤮": "disgusted vomiting",
-    "🤢": "disgusted", "💩": "crap", "🖕": "middle finger", "👿": "evil",
-    "😈": "devilish", "☠️": "death threat", "🔪": "knife violence",
-    "🔫": "gun violence", "🤡": "clown mockery", "🙄": "eye roll",
-    "😤": "furious huff", "💀": "dead", "🐷": "pig insult", "🐖": "pig insult",
-    "😄": "happy", "😊": "friendly", "🙂": "friendly", "❤️": "love",
-    "👍": "approve", "🙌": "celebrate", "😍": "love", "🥰": "affection",
-    "🎉": "celebrate", "😂": "laughing", "🤣": "laughing", "😢": "sad",
-    "😭": "crying",
-  };
-  const EMOJI_RE = /\p{Extended_Pictographic}/gu;
-
-  function demojize(text) {
-    return text.replace(EMOJI_RE, (m) => ` ${EMOJI_WORDS[m] || "emoji"} `);
+  function selectedMethods() {
+    return Array.from(methodsGrid.querySelectorAll('input:checked')).map((el) => el.value);
   }
 
-  // --- language detection (display only; the model itself is EN+DE) --
-  const DE_HINTS = /[äöüß]|\b(der|die|das|und|ist|nicht|ich|du|ein|eine|für|mit|auf|dich|dein|schön|wirklich)\b/i;
-  const EN_HINTS = /\b(the|is|and|you|are|this|that|for|really|great|thanks|hate)\b/i;
-
-  function detectLanguage(text) {
-    const de = (text.match(DE_HINTS) || []).length;
-    const en = (text.match(EN_HINTS) || []).length;
-    return de > en ? "de" : "en";
+  function voteCell(vote) {
+    return vote ? '<span class="vote-pill hateful">Hateful</span>' : '<span class="vote-pill clean">Not hateful</span>';
   }
-
-  // --- model loading (lazy, cached after first call) ------------------
-  let classifierPromise = null;
-
-  function getClassifier() {
-    if (!classifierPromise) {
-      statusEl.classList.add('visible');
-      classifierPromise = pipeline("text-classification", MODEL_ID, {
-        dtype: "q8",
-        progress_callback: (p) => {
-          if (p.status === "progress" && p.total) {
-            const pct = Math.round((p.loaded / p.total) * 100);
-            progressFill.style.width = pct + "%";
-            statusText.textContent = `Downloading ${p.file} — ${pct}%`;
-          } else if (p.status === "ready") {
-            statusText.textContent = "Model ready";
-            progressFill.style.width = "100%";
-          }
-        },
-      });
-    }
-    return classifierPromise;
+  function confCell(pct) {
+    return `<div class="conf-cell"><div class="conf-bar"><div class="conf-bar-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div>`;
   }
 
   async function analyze() {
-    const raw = textEl.value.trim();
+    const text = textEl.value.trim();
     errorEl.classList.remove('visible');
-    if (!raw) return;
+    if (!text) return;
+
+    const ids = selectedMethods();
+    if (ids.length === 0) {
+      errorEl.textContent = 'Select at least one method.';
+      errorEl.classList.add('visible');
+      return;
+    }
 
     analyzeBtn.disabled = true;
     analyzeBtn.textContent = 'Analyzing…';
+    statusEl.classList.add('visible');
+    progressFill.style.width = '0%';
 
     try {
-      const classifier = await getClassifier();
+      const results = [];
+      for (const id of ids) {
+        const def = METHOD_REGISTRY.find((m) => m.id === id);
+        statusText.textContent = `Running ${def.label}…`;
+        const onProgress = (msg) => { statusText.textContent = msg; };
+        const r = await def.run(text, onProgress);
+        results.push({ id: def.id, label: def.label, ...r });
+      }
       statusEl.classList.remove('visible');
 
-      const lang = detectLanguage(raw);
-      const processed = demojize(raw);
+      const votes = results.map((r) => (r.vote ? 1 : 0));
+      const voteShare = Math.round((100 * votes.reduce((a, b) => a + b, 0)) / votes.length * 100) / 100;
+      const avgConfidence = Math.round((results.reduce((a, r) => a + r.confidence, 0) / results.length) * 100) / 100;
+      const votesFor = votes.reduce((a, b) => a + b, 0);
 
-      const scores = await classifier(processed, { top_k: null });
-      const offensive = scores.find((s) => s.label === "LABEL_1") || scores[0];
-      const confidence = Math.round(offensive.score * 10000) / 100;
-
-      renderResult({ confidence, language: lang });
+      renderResult({
+        results,
+        ensemble: { vote_share: voteShare, avg_confidence: avgConfidence, verdict: voteShare >= 50, votes_for: votesFor, total: votes.length },
+        language: detectLanguage(text),
+      });
     } catch (err) {
       console.error(err);
       errorEl.textContent = err.message || String(err);
       errorEl.classList.add('visible');
       resultEl.classList.remove('visible');
+      statusEl.classList.remove('visible');
     } finally {
       analyzeBtn.disabled = false;
       analyzeBtn.textContent = 'Analyze';
@@ -355,19 +534,28 @@
   }
 
   function renderResult(data) {
-    const pct = data.confidence;
-    meterFill.style.width = pct + '%';
-    confidenceLabel.textContent = pct + '%';
+    const rows = data.results.map((r) => `
+      <tr>
+        <td>${r.label}</td>
+        <td>${confCell(r.confidence)}</td>
+        <td>${voteCell(r.vote)}</td>
+        <td class="detail-cell">${r.detail || ''}</td>
+      </tr>
+    `);
 
-    let verdict = 'Looks fine';
-    if (pct >= 75) verdict = 'Very likely hateful';
-    else if (pct >= 40) verdict = 'Possibly hateful — review';
-    verdictEl.textContent = verdict;
+    const e = data.ensemble;
+    rows.push(`
+      <tr class="ensemble-row">
+        <td>Ensemble (equal vote)</td>
+        <td>${confCell(e.vote_share)}</td>
+        <td>${voteCell(e.verdict)}</td>
+        <td class="detail-cell">${e.votes_for}/${e.total} methods voted hateful · avg confidence ${e.avg_confidence}%</td>
+      </tr>
+    `);
 
-    langMeta.textContent = 'language: ' + data.language.toUpperCase();
+    resultBody.innerHTML = rows.join('');
     langBadge.style.display = 'inline-block';
     langBadge.textContent = data.language.toUpperCase();
-
     resultEl.classList.add('visible');
   }
 </script>
