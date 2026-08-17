@@ -13,6 +13,8 @@
     --text: #e8eaed;
     --muted: #9aa1ac;
     --accent: #6ea8fe;
+    --row-hover: #1d2129;
+    --ensemble-bg: #1c2333;
   }
   @media (prefers-color-scheme: light) {
     :root {
@@ -22,6 +24,8 @@
       --text: #16181d;
       --muted: #666d78;
       --accent: #2f6fed;
+      --row-hover: #f7f8fa;
+      --ensemble-bg: #eaf0ff;
     }
   }
   * { box-sizing: border-box; }
@@ -32,17 +36,18 @@
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 24px;
   }
   .card {
     width: 100%;
-    max-width: 640px;
+    max-width: 780px;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 32px;
+    margin-top: 24px;
   }
   h1 {
     font-size: 1.4rem;
@@ -55,7 +60,7 @@
   }
   textarea {
     width: 100%;
-    min-height: 110px;
+    min-height: 100px;
     resize: vertical;
     background: transparent;
     color: var(--text);
@@ -68,33 +73,6 @@
   textarea:focus {
     outline: 2px solid var(--accent);
     outline-offset: -1px;
-  }
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 14px;
-  }
-  button {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  button:disabled {
-    opacity: 0.6;
-    cursor: default;
-  }
-  .lang-badge {
-    font-size: 0.8rem;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 4px 10px;
   }
   .examples {
     margin-top: 10px;
@@ -110,49 +88,67 @@
     font-size: 0.8rem;
     padding: 6px 12px;
   }
-  .result {
-    margin-top: 28px;
-    display: none;
+  .methods-picker {
+    margin-top: 18px;
   }
-  .result.visible { display: block; }
-  .meter-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .meter {
-    height: 12px;
-    border-radius: 999px;
-    background: var(--border);
-    overflow: hidden;
-  }
-  .meter-fill {
-    height: 100%;
-    width: 0%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #34c759, #ffd60a, #ff453a);
-    transition: width 0.4s ease;
-  }
-  .confidence {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-top: 10px;
-  }
-  .verdict {
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-  .meta {
-    margin-top: 16px;
+  .methods-picker legend {
     font-size: 0.8rem;
     color: var(--muted);
+    padding: 0;
+    margin-bottom: 8px;
+  }
+  .methods-grid {
     display: flex;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .method-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 12px 6px 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .method-toggle input { accent-color: var(--accent); }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
     flex-wrap: wrap;
   }
+  button#analyze {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button#analyze:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .lang-badge {
+    font-size: 0.8rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 10px;
+  }
+  .status {
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    display: none;
+  }
+  .status.visible { display: block; }
   .error {
     margin-top: 16px;
     color: #ff6b6b;
@@ -160,12 +156,65 @@
     display: none;
   }
   .error.visible { display: block; }
+  .result {
+    margin-top: 26px;
+    display: none;
+  }
+  .result.visible { display: block; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  tbody tr:hover { background: var(--row-hover); }
+  .conf-cell { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .conf-bar {
+    width: 70px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--border);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .conf-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #34c759, #ffd60a, #ff453a);
+  }
+  .vote-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .vote-pill.hateful { background: rgba(255, 69, 58, 0.15); color: #ff453a; }
+  .vote-pill.clean { background: rgba(52, 199, 89, 0.15); color: #34c759; }
+  .detail-cell { color: var(--muted); font-size: 0.78rem; max-width: 260px; }
+  tr.ensemble-row { background: var(--ensemble-bg); font-weight: 600; }
+  tr.ensemble-row td { border-bottom: none; }
+  .footnote {
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
 </style>
 </head>
 <body>
   <div class="card">
     <h1>Hate Speech Detector</h1>
-    <p class="sub">English &amp; German comments · emoji-aware · vector-based scoring</p>
+    <p class="sub">English &amp; German · emoji-aware · runs 5 independent methods and votes</p>
 
     <textarea id="text" placeholder="Type or paste a comment... (English or German, emoji welcome 🙂)"></textarea>
 
@@ -176,24 +225,32 @@
       <button type="button" data-text="Thanks for sharing this, really helpful post 🙌">EN friendly</button>
     </div>
 
+    <fieldset class="methods-picker" style="border:none; padding:0;">
+      <legend>Methods to run</legend>
+      <div class="methods-grid" id="methodsGrid"></div>
+    </fieldset>
+
     <div class="row">
       <button id="analyze">Analyze</button>
       <span id="langBadge" class="lang-badge" style="display:none;"></span>
     </div>
 
+    <div class="status" id="status">Loading models on first use — this can take a moment…</div>
     <div class="error" id="error"></div>
 
     <div class="result" id="result">
-      <div class="meter-label">
-        <span>Hate speech confidence</span>
-        <span id="confidenceLabel">0%</span>
-      </div>
-      <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
-      <div class="verdict" id="verdict"></div>
-      <div class="meta">
-        <span id="langMeta"></span>
-        <span id="vectorMeta"></span>
-      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Confidence</th>
+            <th>Vote</th>
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+      <p class="footnote">Ensemble = share of selected methods that individually voted "hateful" (confidence ≥ 50%), each method weighted equally.</p>
     </div>
   </div>
 
@@ -201,13 +258,13 @@
   const textEl = document.getElementById('text');
   const analyzeBtn = document.getElementById('analyze');
   const resultEl = document.getElementById('result');
-  const meterFill = document.getElementById('meterFill');
-  const confidenceLabel = document.getElementById('confidenceLabel');
-  const verdictEl = document.getElementById('verdict');
-  const langMeta = document.getElementById('langMeta');
-  const vectorMeta = document.getElementById('vectorMeta');
+  const resultBody = document.getElementById('resultBody');
   const langBadge = document.getElementById('langBadge');
   const errorEl = document.getElementById('error');
+  const statusEl = document.getElementById('status');
+  const methodsGrid = document.getElementById('methodsGrid');
+
+  let methodDefs = [];
 
   document.querySelectorAll('.examples button').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -221,25 +278,46 @@
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) analyze();
   });
 
+  async function loadMethods() {
+    const res = await fetch('/api/methods');
+    methodDefs = await res.json();
+    methodsGrid.innerHTML = methodDefs.map((m) => `
+      <label class="method-toggle">
+        <input type="checkbox" value="${m.id}" checked />
+        ${m.label}
+      </label>
+    `).join('');
+  }
+
+  function selectedMethods() {
+    return Array.from(methodsGrid.querySelectorAll('input:checked')).map((el) => el.value);
+  }
+
   async function analyze() {
     const text = textEl.value.trim();
     errorEl.classList.remove('visible');
     if (!text) return;
 
+    const methods = selectedMethods();
+    if (methods.length === 0) {
+      errorEl.textContent = 'Select at least one method.';
+      errorEl.classList.add('visible');
+      return;
+    }
+
     analyzeBtn.disabled = true;
     analyzeBtn.textContent = 'Analyzing…';
+    statusEl.classList.add('visible');
 
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, methods }),
       });
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Request failed');
-      }
+      if (!res.ok) throw new Error(data.error || 'Request failed');
 
       renderResult(data);
     } catch (err) {
@@ -249,27 +327,54 @@
     } finally {
       analyzeBtn.disabled = false;
       analyzeBtn.textContent = 'Analyze';
+      statusEl.classList.remove('visible');
     }
   }
 
+  function voteCell(vote) {
+    return vote
+      ? '<span class="vote-pill hateful">Hateful</span>'
+      : '<span class="vote-pill clean">Not hateful</span>';
+  }
+
+  function confCell(pct) {
+    return `
+      <div class="conf-cell">
+        <div class="conf-bar"><div class="conf-bar-fill" style="width:${pct}%"></div></div>
+        <span>${pct}%</span>
+      </div>
+    `;
+  }
+
   function renderResult(data) {
-    const pct = data.confidence;
-    meterFill.style.width = pct + '%';
-    confidenceLabel.textContent = pct + '%';
+    const rows = data.results.map((r) => `
+      <tr>
+        <td>${r.label}</td>
+        <td>${confCell(r.confidence)}</td>
+        <td>${voteCell(r.vote)}</td>
+        <td class="detail-cell">${r.detail || ''}</td>
+      </tr>
+    `);
 
-    let verdict = 'Looks fine';
-    if (pct >= 75) verdict = 'Very likely hateful';
-    else if (pct >= 40) verdict = 'Possibly hateful — review';
-    verdictEl.textContent = verdict;
+    const e = data.ensemble;
+    rows.push(`
+      <tr class="ensemble-row">
+        <td>Ensemble (equal vote)</td>
+        <td>${confCell(e.vote_share)}</td>
+        <td>${voteCell(e.verdict)}</td>
+        <td class="detail-cell">${e.votes_for}/${e.total} methods voted hateful · avg confidence ${e.avg_confidence}%</td>
+      </tr>
+    `);
 
-    langMeta.textContent = 'language: ' + data.language.toUpperCase();
-    vectorMeta.textContent = 'embedding dim: ' + data.vector_dim;
+    resultBody.innerHTML = rows.join('');
 
     langBadge.style.display = 'inline-block';
     langBadge.textContent = data.language.toUpperCase();
 
     resultEl.classList.add('visible');
   }
+
+  loadMethods();
 </script>
 </body>
 </html>

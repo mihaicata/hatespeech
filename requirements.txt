@@ -4,3 +4,9 @@ transformers
 langdetect
 emoji
 numpy
+scikit-learn
+gensim
+sentence-transformers
+pandas
+pyarrow
+joblib
