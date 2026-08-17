@@ -10,3 +10,7 @@ sentence-transformers
 pandas
 pyarrow
 joblib
+jupyter
+ipykernel
+matplotlib
+tqdm

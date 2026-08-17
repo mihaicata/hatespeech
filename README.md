@@ -47,3 +47,18 @@ Note the static demo downloads real models on first use — the sentence
 embedder (~118MB) and the transformer classifier (~280MB) are the big ones,
 cached by the browser afterward. Keyword/TF-IDF/Word2Vec together add
 under 10MB.
+
+## Benchmarking on your own data
+
+[`evaluate_methods.ipynb`](evaluate_methods.ipynb) runs all 5 methods (+
+ensemble) over a DataFrame of `text`/`label` rows and reports
+accuracy/precision/recall/F1, confusion matrices, and the disagreement
+cases. Ships with a small built-in demo set; swap in `pd.read_csv(...)`
+for your own, or flip on the notebook's `USE_REAL_TEST_SET` flag to
+evaluate against the same held-out `tweet_eval` + GermEval 2018 split
+`train_models.py` reports its own numbers on.
+
+```bash
+source .venv/bin/activate
+jupyter lab   # open evaluate_methods.ipynb
+```
