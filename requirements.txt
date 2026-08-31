@@ -15,3 +15,4 @@ ipykernel
 matplotlib
 tqdm
 python-docx
+openpyxl

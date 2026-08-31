@@ -70,3 +70,26 @@ confusion matrices, and ROC/precision-recall curves — reusing the actual
 local project, `hateblocker-main`, rather than reimplementing it. It only
 runs where that project is checked out; the code itself isn't vendored
 into this repo.
+
+### Real-data run
+
+There's also an optional third data source (`USE_HATEBLOCKER_DATA` flag)
+that loads real German annotated comments through hateblocker's own
+`prepare_data()` loader — same dedup, same 70/15/15 split — and evaluates
+these 5 methods against it. The underlying comments are private and never
+committed here (row-level `text` never appears in a saved cell output for
+that path); only the aggregate report does, at
+[`reports/hateblocker/evaluation_report.docx`](reports/hateblocker/evaluation_report.docx)
+and [`curves.png`](reports/hateblocker/curves.png).
+
+Headline result, on the 863-row held-out test split (5,750 deduplicated
+comments total): these general-purpose hate-speech methods were never
+trained to predict *criminally actionable under German law* specifically
+(a narrower target than plain hatefulness), so raw precision is modest —
+but the equal-vote **ensemble beats every individual method on ROC-AUC
+(0.776) and F1 (0.364)**, and its ROC curve sits above all five individual
+methods across nearly the whole curve. Restricting to the
+hate-qualified subset (comments that actually reached legal review, the
+fairer comparison) tightens the gap: Sentence Embedding k-NN and the
+ensemble both reach ~0.44 F1 there, via very different precision/recall
+trade-offs. Full breakdown in the report.
