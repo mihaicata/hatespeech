@@ -62,3 +62,11 @@ evaluate against the same held-out `tweet_eval` + GermEval 2018 split
 source .venv/bin/activate
 jupyter lab   # open evaluate_methods.ipynb
 ```
+
+The notebook's last section (optional, machine-local) generates a Word
+report at `reports/evaluation_report.docx` — metrics table, per-method
+confusion matrices, and ROC/precision-recall curves — reusing the actual
+`classification_metrics()` / table / curve-plotting code from a separate
+local project, `hateblocker-main`, rather than reimplementing it. It only
+runs where that project is checked out; the code itself isn't vendored
+into this repo.
